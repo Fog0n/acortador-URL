@@ -1,19 +1,51 @@
-import {useState} from "react";
-import {Form, Button, Alert, Card, InputGroup} from "react-bootstrap";
+import {useState, FormEvent} from "react";
+import {Form, Button, Alert, Card,InputGroup, Spinner} from "react-bootstrap";
 
 function FormularioUrl() {
     //estado para almacenar lo que el usuario escribe y la respuesta del servidor
     const [urlLarga, setUrlLarga] = useState('');
     const [urlCorta, setUrlCorta] = useState('');
+    const [cargado, setCargado] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
 
-    const manejarEnvio = (e: FormEvent<HTMLFormElement>): void => {
+    const manejarEnvio = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault(); //evita que la pagina se recargue
-
+        setError('');
+        setUrlCorta('');
         //Aquí iría la lógica para enviar la URL larga al servidor y obtener la URL corta
         //Por ahora, simularemos la respuesta del servidor generando una URL corta aleatoria
-        if (urlLarga) {
-            setUrlCorta('http://localhost:3000/x7B9qW');
-            setUrlLarga(''); //limpia el campo de entrada
+        if (!urlLarga) return;
+
+        setCargado(true);
+        try{
+            //Hacemos la peticion real al servidor para acortar la URL
+            const respuesta = await fetch('http://localhost:3000/api/urls/acortar',{
+                method: 'POST',
+                headers: {
+                    'Content-Type':'application/json',
+                },
+                body: JSON.stringify({url_original: urlLarga}),
+            });
+            
+            const datos = await respuesta.json();
+
+            console.log("Datos del servidor:",datos);
+
+            if (!respuesta.ok){
+                throw new Error(datos.error || 'Ocurrio un error al acortar la URL');
+            }
+
+            //Guardamos la Url que nos devuelve el servidor
+            setUrlCorta(datos.url_corta);
+            setUrlLarga('');//Limpiamos el input
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('Error de conexión con el servidor');
+            }
+        } finally {
+            setCargado(false);
         }
     };
 
@@ -27,13 +59,18 @@ function FormularioUrl() {
                         onChange={(e)=> setUrlLarga(e.target.value)}
                         required
                         type="url"
+                        disabled={cargado}
                     />
-                    <Button variant="primary" type="submit">
-                        Acortar URL
+                    <Button variant="primary" type="submit" disabled={cargado}>
+                        {cargado ? <Spinner animation="border" size="sm"/>:'Acortar URL'}
                     </Button>
                 </InputGroup>
             </Form>
 
+            {/* Mostrar mensaje de error si el servidor falla */}
+            {error && <Alert variant="danger">{error}</Alert>}
+
+            {/* Mostrar la URL corta que viene del backend */}
             {urlCorta && (
                 <Alert variant="success" className="d-flex justify-content-between align-items-center mt-3">
                     <div>
@@ -50,7 +87,6 @@ function FormularioUrl() {
                         Copiar
                     </Button>
                 </Alert>
-
             )}
         </Card>
     )
