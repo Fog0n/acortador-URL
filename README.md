@@ -22,15 +22,20 @@ Aplicación web full-stack para acortar URLs con métricas de clics e historial 
 ```
 .
 ├── acortador-backend/          # API REST (Express + PostgreSQL)
+│   ├── .env                    # Variables reales (NO se sube a Git)
+│   ├── .env.example            # Plantilla de variables de entorno
 │   └── src/
 │       ├── index.js            # Entrada del servidor y rutas de redirección
-│       ├── db.js               # Pool de conexión a PostgreSQL
+│       ├── db.js               # Pool de conexión a PostgreSQL (usa DATABASE_URL)
 │       ├── controllers/
 │       │   └── urlController.js# Lógica: crear, redirigir, historial, métricas
 │       └── routes/
 │           └── urlRoutes.js    # Rutas /api/urls
 └── acortador-front/            # SPA (React + TypeScript + Vite)
+    ├── .env                    # Variables reales (NO se sube a Git)
+    ├── .env.example            # Plantilla de variables de entorno
     └── src/
+        ├── config.ts           # Lee import.meta.env.VITE_API_URL
         ├── App.tsx             # Layout principal
         ├── componentes/
         │   ├── FormularioUrl.tsx   # Formulario para acortar URLs
@@ -66,11 +71,31 @@ CREATE TABLE urls (
 );
 ```
 
-> ⚠️ La cadena de conexión está definida directamente en `acortador-backend/src/db.js`
-> (`postgresql://postgres:TU_CONTRASEÑA@localhost:5432/acortador_db`). Reemplaza la contraseña
-> por la de tu instalación local de PostgreSQL.
+> ⚠️ La cadena de conexión ya **no** está hardcodeada: se lee desde el archivo
+> `acortador-backend/.env` (variable `DATABASE_URL`).
 
-### 2. Backend
+### 2. Variables de entorno (.env)
+
+Cada proyecto incluye un `.env.example`. Copíalo a `.env` y ajusta los valores:
+
+```bash
+cp acortador-backend/.env.example acortador-backend/.env
+cp acortador-front/.env.example acortador-front/.env
+```
+
+| Proyecto  | Variable        | Descripción                                                        | Ejemplo                                   |
+|-----------|-----------------|--------------------------------------------------------------------|-------------------------------------------|
+| backend   | `PORT`          | Puerto del servidor Express                                        | `3000`                                    |
+| backend   | `BASE_URL`      | URL base pública usada para generar las URLs cortas                | `http://localhost:3000`                   |
+| backend   | `DATABASE_URL`  | Cadena de conexión PostgreSQL                                      | `postgresql://postgres:TU_CONTRASENA@localhost:5432/acortador_db` |
+| backend   | `CORS_ORIGIN`   | Origen permitido por CORS (dirección del frontend)                 | `http://localhost:5173`                   |
+| frontend  | `VITE_API_URL`  | URL del backend; en Vite debe llevar el prefijo `VITE_`            | `http://localhost:3000`                   |
+
+Los archivos `.env` están en `.gitignore` (solo se versiona `.env.example`), por lo que
+las credenciales nunca se suben al repositorio. Si falta `DATABASE_URL`, el backend falla
+al arrancar con un mensaje claro indicando que copies `.env.example` a `.env`.
+
+### 3. Backend
 
 ```bash
 cd acortador-backend
@@ -78,7 +103,7 @@ npm install
 npm run dev        # Inicia con nodemon en http://localhost:3000
 ```
 
-### 3. Frontend
+### 4. Frontend
 
 ```bash
 cd acortador-front
@@ -129,5 +154,6 @@ Respuesta `201 Created`:
 
 ## 📝 Notas
 
-- El frontend consume la API en `http://localhost:3000`; CORS está habilitado en el backend.
-- `.env` del backend contiene `PORT` y `DATABASE_URL` (actualmente la conexión usa la URL fija en `db.js`).
+- Toda la configuración vive en los archivos `.env` de cada proyecto (`acortador-backend/.env` y `acortador-front/.env`); ninguno se sube a Git.
+- El frontend obtiene la URL del backend desde `VITE_API_URL` a través de `src/config.ts`; no hay direcciones hardcodeadas en los componentes.
+- El backend valida `PORT`, `BASE_URL`, `DATABASE_URL` y `CORS_ORIGIN` desde `.env` mediante `dotenv`.

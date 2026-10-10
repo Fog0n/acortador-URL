@@ -1,3 +1,4 @@
+import { API_ENDPOINTS, getUrlCorta } from '../config';
 import { useState, useEffect } from 'react';
 
 export default function PanelMetricas() {
@@ -6,7 +7,7 @@ export default function PanelMetricas() {
   useEffect(() => {
     const cargarHistorial = async () => {
       try {
-        const respuesta = await fetch('http://localhost:3000/api/urls');
+        const respuesta = await fetch(API_ENDPOINTS);
         if (respuesta.ok) {
           const datos = await respuesta.json();
           setHistorial(datos);
@@ -67,7 +68,7 @@ export default function PanelMetricas() {
                     {new Date(item.fecha_creacion).toLocaleString()}
                   </td>
                   <td style={{ padding: '12px' }}>
-                    <a href={`http://localhost:3000/${item.hash_id}`} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'none', fontWeight: '500' }}>
+                    <a href={getUrlCorta(item.hash_id)} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'none', fontWeight: '500' }}>
                       /{item.hash_id}
                     </a>
                   </td>

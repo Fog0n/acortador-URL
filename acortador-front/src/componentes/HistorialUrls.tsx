@@ -1,3 +1,4 @@
+import { API_ENDPOINTS, getUrlCorta } from '../config';
 import { useState, useEffect } from 'react';
 
 export default function HistorialUrls() {
@@ -6,7 +7,7 @@ export default function HistorialUrls() {
   useEffect(() => {
     const cargarHistorial = async () => {
       try {
-        const respuesta = await fetch('http://localhost:3000/api/urls');
+        const respuesta = await fetch(API_ENDPOINTS);
         if (respuesta.ok) {
           const datos = await respuesta.json();
           setHistorial(datos);
@@ -38,8 +39,8 @@ export default function HistorialUrls() {
               }}
             >
               <p style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>
-                🔗 <a href={`http://localhost:3000/${item.hash_id}`} target="_blank" rel="noopener noreferrer">
-                  http://localhost:3000/{item.hash_id}
+                🔗 <a href={getUrlCorta(item.hash_id)} target="_blank" rel="noopener noreferrer">
+                  {getUrlCorta(item.hash_id)}
                 </a>
               </p>
               <p style={{ margin: 0, fontSize: '0.9em', color: '#555', wordBreak: 'break-all' }}>

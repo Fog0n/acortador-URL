@@ -11,7 +11,8 @@ export const createUrlCorta= async (req, res )=>{
 
         // Generar un identificador único de 6 caracteres
         const hash_id = nanoid(6);
-        const url_corta =`http://localhost:3000/${hash_id}`;
+        const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+        const url_corta = `${baseUrl}/${hash_id}`;
         
         //Aqui: mas adelante insertaremos esto en la base de datos SQL
         const consulta=`
