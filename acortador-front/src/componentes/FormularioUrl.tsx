@@ -1,4 +1,6 @@
-import {useState, FormEvent} from "react";
+import { API_ENDPOINTS } from "../config";
+import { useState } from "react";
+import type { FormEvent } from "react";
 import {Form, Button, Alert, Card,InputGroup, Spinner} from "react-bootstrap";
 
 function FormularioUrl() {
@@ -19,7 +21,7 @@ function FormularioUrl() {
         setCargado(true);
         try{
             //Hacemos la peticion real al servidor para acortar la URL
-            const respuesta = await fetch('http://localhost:3000/api/urls/acortar',{
+            const respuesta = await fetch(`${API_ENDPOINTS}/acortar`,{
                 method: 'POST',
                 headers: {
                     'Content-Type':'application/json',

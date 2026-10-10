@@ -1,17 +1,24 @@
 import pg from 'pg';
+import dotenv from 'dotenv';
+
+// Carga el .env para que DATABASE_URL esté disponible aquí y en cualquier otro módulo
+dotenv.config();
 
 const { Pool } = pg;
 
-// Ponemos la URL directamente aquí. 
-// Reemplaza TU_CONTRASEÑA con tu contraseña real de PostgreSQL
-const miUrl = 'postgresql://postgres:DBhostlenovo@localhost:5432/acortador_db';
+// La cadena de conexión se lee desde la variable de entorno DATABASE_URL (.env)
+if (!process.env.DATABASE_URL) {
+  throw new Error(
+    'Falta la variable de entorno DATABASE_URL. Copia el archivo .env.example a .env y complétalo.'
+  );
+}
 
 export const pool = new Pool({
-  connectionString: miUrl,
+  connectionString: process.env.DATABASE_URL,
 });
 
 pool.on('connect', () => {
-  console.log('🐘 Conexión exitosa a PostgreSQL usando URL directa');
+  console.log('🐘 Conexión exitosa a PostgreSQL (configurada vía .env)');
 });
 
 pool.on('error', (err) => {

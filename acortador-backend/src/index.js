@@ -5,13 +5,15 @@ import urlRoutes from "./routes/urlRoutes.js";
 import {pool} from './db.js';
 import { redireccionarUrl } from "./controllers/urlController.js";
 
+// Cargar variables de entorno ANTES de importar cualquier otro módulo que las use
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors()); // Permite peticiones desde el frontend
+// Permite peticiones desde el frontend (origen configurable vía CORS_ORIGIN en .env)
+app.use(cors({ origin: process.env.CORS_ORIGIN || "http://localhost:5173" }));
 app.use(express.json()); //Permite leer el JSON en el body de las peticiones
 
 // Rutas

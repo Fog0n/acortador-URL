@@ -23,4 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 # Environment variables
-.env 
+.env # Variables de entorno
+.env
+.env.local
+.env.*.local
