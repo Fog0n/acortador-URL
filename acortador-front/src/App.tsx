@@ -1,35 +1,38 @@
-import 'bootstrap/dist/css/bootstrap.min.css'
-import {Container, Row, Col} from 'react-bootstrap';
-
 import FormularioUrl from './componentes/FormularioUrl';
 import PanelMetricas from './componentes/PanelMetricas';
 import HistorialUrls from './componentes/HistorialUrls';
-//import type {MetricasURL} from './types';
+import { Container } from 'react-bootstrap';
+import { Icon } from './icons';
 
 function App() {
-  // Simulación de datos (Mock) de métricas para la demostración 
-
-
-
   return (
-    <Container className="mt-5">
-      <Row className="justify-content-md-center text-center">
-        <Col md={8}>
-          <h1 className="mb-4">Acortador de URLs</h1>
-          <p className="lead">Pega tu enlace largo y genera una vercion corta con métricas</p>
+    <>
+      {/* Cabecera con degradado: escala la tipografía según el ancho de pantalla */}
+      <header className="app-header">
+        <Container className="py-4 py-md-5 text-center">
+          <h1 className="d-inline-flex align-items-center gap-2 flex-wrap justify-content-center">
+            <Icon name="link" /> Acortador de URLs
+          </h1>
+          <p className="lead mb-0">
+            Pega tu enlace largo y genera una versión corta con métricas de clics
+          </p>
+        </Container>
+      </header>
 
+      {/* Contenido principal: en móvil ocupa todo el ancho, en escritorio se centra */}
+      <main className="app-content">
+        <Container className="px-3 px-md-4" style={{ maxWidth: '860px' }}>
           <FormularioUrl />
-
-          <HistorialUrls />
-
           <PanelMetricas />
+          <HistorialUrls />
+        </Container>
+      </main>
 
-
-        </Col>
-      </Row>
-    </Container>
+      <footer className="app-footer">
+        Hecho con React, Bootstrap 5 y mucho ☕
+      </footer>
+    </>
   );
-
 }
 
 export default App;

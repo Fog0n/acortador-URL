@@ -1,6 +1,6 @@
 # 🔗 Acortador de URLs
 
-Aplicación web full-stack para acortar URLs con métricas de clics e historial de enlaces. Consta de un backend en **Node.js/Express** conectado a **PostgreSQL** y un frontend en **React + TypeScript** construido con **Vite** y estilizado con **Bootstrap**.
+Aplicación web full-stack para acortar URLs con métricas de clics e historial de enlaces. Consta de un backend en **Node.js/Express** conectado a **PostgreSQL** y un frontend en **React + TypeScript** construido con **Vite** y estilizado con **Bootstrap**, con interfaz **responsive** totalmente compatible con teléfonos (mobile-first).
 
 ## ✨ Funcionalidades
 
