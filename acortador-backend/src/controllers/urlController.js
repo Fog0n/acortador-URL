@@ -35,8 +35,10 @@ export const redireccionarUrl = async (req, res) =>{
     try{
         const {hash_id} = req.params;
 
-        const consulta = `SELECT url_original FROM urls WHERE hash_id = $1;`;
-        const resultado = await pool.query(consulta, [hash_id]);
+        const resultado = await pool.query(
+            'UPDATE urls SET clicks = clicks + 1 WHERE hash_id = $1 RETURNING url_original',
+            [hash_id]
+        )
 
         if (resultado.rows.length === 0){
             return res.status(404).send('<h1>URL no encotrada</h1>');
@@ -50,4 +52,38 @@ export const redireccionarUrl = async (req, res) =>{
          console.error('Error en la redireccion:', error);
          res.status(500).send('Error del servidor');
     }
+};
+
+//Funcion para obtener el historial de urls
+export const obtenerUrls = async (req, res)=>{
+    try{
+        const resultado= await pool.query(
+            'SELECT * FROM urls ORDER BY fecha_creacion DESC LIMIT 10'
+        );
+        res.json(resultado.rows);
+    } catch (error){
+        console.error('Error al obtener el historial:',error);
+        res.status(500).json({error: 'Error interno del servidor'});      
+    }
+};
+
+//Funcion para obtener las metricas globales
+export const obtenerMetricas = async (req, res)=>{
+    try{
+        //Consultamos el total de URLs y la suma total de clics
+        const resultado = await pool.query(
+            'SELECT COUNT(*) AS total_urls, COALESCE(SUM(clicks),0) AS total_clicks FROM urls'
+        );
+
+        const metricas = resultado.rows[0];
+
+        res.json({
+            totalUrls: parseInt(metricas.total_Urls) || 0,
+            totalClicks: parseInt(metricas.total_Clicks) ||0,
+        });
+    } catch (error){
+        console.error('Error al obtener las metricas:',error);
+        res.status(500).json({ error: 'Error interno del servidor'});
+    }
+
 };
